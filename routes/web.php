@@ -33,4 +33,13 @@ Route::group(['middleware' => ['web']], function(){
     'uses' => 'ContactMessageController@getContactIndex',
     'as' => 'contact'
   ]);
+
+  Route::group([
+    'prefix' => '/admin'
+  ], function(){
+    Route::get('/', [
+      'uses' => 'AdminController@getIndex',
+      'as' => 'admin.index'
+    ]);
+  });
 });
