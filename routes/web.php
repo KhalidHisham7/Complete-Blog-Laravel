@@ -33,7 +33,10 @@ Route::group(['middleware' => ['web']], function(){
     'uses' => 'ContactMessageController@getContactIndex',
     'as' => 'contact'
   ]);
-
+  Route::post('/contact/sendmail' , [
+    'uses' => 'ContactMessageController@postSendMessage',
+    'as' => 'contact.send'
+  ]);
   Route::group([
     'prefix' => '/admin'
   ], function(){
