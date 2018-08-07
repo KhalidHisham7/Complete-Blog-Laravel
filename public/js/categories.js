@@ -5,7 +5,7 @@ var tid = setInterval(function () {
     clearInterval(tid);
 
     var editSections = document.getElementsByClassName('edit');
-
+    var i = 0;
     for (i = 0; i < editSections.length; i++) {
         editSections[i].firstElementChild.firstElementChild.children[1].firstChild.addEventListener('click', startEdit);
         editSections[i].firstElementChild.firstElementChild.children[2].firstChild.addEventListener('click', startDelete);
@@ -13,54 +13,6 @@ var tid = setInterval(function () {
 }, 100);
 
 document.getElementsByClassName('btn')[0].addEventListener('click', createNewCategory);
-
-function startEdit(event) {
-    event.preventDefault();
-    event.target.textContent = "Save";
-    var li = event.target.parentNode.parentNode.children[0];
-    li.children[0].value = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.children[0].textContent;
-    li.style.display = "inline-block";
-    setTimeout(function() {
-        li.children[0].style.maxWidth = "110px";
-    }, 1);
-    event.target.removeEventListener('click', startEdit);
-    event.target.addEventListener('click', saveEdit);
-}
-
-function saveEdit(event) {
-    event.preventDefault();
-    var li = event.target.parentNode.parentNode.children[0];
-    var categoryName = li.children[0].value;
-    var categoryId = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.dataset['id'];
-    if (categoryName.length === 0) {
-        alert("Please enter a valid Category name!");
-        return;
-    }
-    ajax("POST", "/admin/blog/categories/update", "name=" + categoryName + "&category_id=" + categoryId, endEdit, [event]);
-}
-
-function endEdit(params, success, responseObj) {
-    var event = params[0];
-
-    if (success) {
-        var newName = responseObj.new_name;
-        var article = event.target.parentNode.parentNode.parentNode.parentNode.parentNode;
-        article.style.backgroundColor = "#afefac";
-        setTimeout(function() {
-            article.style.backgroundColor = "white";
-        }, 300);
-        article.firstElementChild.firstElementChild.textContent = newName;
-    }
-
-    event.target.textContent = "Edit";
-    var li = event.target.parentNode.parentNode.children[0];
-    li.children[0].style.maxWidth = "0px";
-    setTimeout(function() {
-        li.style.display = "none";
-    }, 310);
-    event.target.removeEventListener('click', saveEdit);
-    event.target.addEventListener('click', startEdit)
-}
 
 function createNewCategory(event) {
     event.preventDefault();
@@ -75,30 +27,6 @@ function createNewCategory(event) {
 function newCategoryCreated(params, success, responseObj) {
     var name = params[0];
     location.reload();
-}
-
-function startDelete(event) {
-    // Open Modal here
-    deleteCategory(event);
-
-}
-
-function deleteCategory(event) {
-    event.preventDefault();
-    event.target.removeEventListener('click', startDelete);
-    var categoryId = event.target.parentNode.parentNode.parentNode.parentNode.previousElementSibling.dataset['id'];
-    ajax("GET", "/admin/blog/category/" + categoryId + "/delete", null, categoryDeleted, [event.target.parentNode.parentNode.parentNode.parentNode.parentNode]);
-}
-
-function categoryDeleted(params, success, responseObj) {
-    var article = params[0];
-    if (success) {
-        article.style.backgroundColor = "#ffc4be";
-        setTimeout(function() {
-            article.remove();
-            location.reload();
-        }, 300);
-    }
 }
 
 function ajax(method, url, params, callback, callbackParams) {
@@ -141,6 +69,3 @@ function ajax(method, url, params, callback, callbackParams) {
     http.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     http.send(params + "&_token=" + token);
 }
-
-
-

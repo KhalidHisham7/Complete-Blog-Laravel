@@ -21,16 +21,20 @@
       <div class="input-group">
         <label for="category_select">Add categories</label>
         <select name="category_select" id="category_select">
-          <!-- foreach loop to output categories -->
+          @foreach($categories as $category)
+            <option value="{{ $category->id }}">{{ $category->name }}</option>
+          @endforeach
           <option value="Dummy category id">Dummy Category</option>
         </select>
         <button type="button" class="btn">Add Category</button>
         <div class="added-categories">
           <ul>
-
+            @foreach($post_categories as $post_category)
+              <li> <a href="#" data-id="{{ $post_category->id }}">{{ $post_category->name }}</a> </li>
+            @endforeach
           </ul>
         </div>
-        <input type="hidden" name="categories" id="categories">
+        <input type="hidden" name="categories" id="categories" value="{{ implode(',' , $post_categories_ids) }}">
       </div>
       <div class="input-group">
         <label for="body">Body</label>

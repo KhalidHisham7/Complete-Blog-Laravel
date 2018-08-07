@@ -27,7 +27,7 @@
             <nav>
               <ul>
                 <li class="category-edit"> <input type="text"/> </li>
-                <li> <a href="#">Edit</a> </li>
+                <li> <a href="#" onclick="startEdit(event)">Edit</a> </li>
                 <li> <a href="#" class="danger">Delete</a> </li>
               </ul>
             </nav>

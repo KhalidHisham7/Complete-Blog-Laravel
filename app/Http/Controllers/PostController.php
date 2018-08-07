@@ -2,7 +2,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Validator;
+use App\Category;
 use App\Post;
+
 
 class PostController extends Controller
 {
@@ -36,17 +38,31 @@ class PostController extends Controller
     public function getUpdatePost($post_id)
     {
       $post = Post::find($post_id);
+      $categories = Category::all();
+      $post_categories = $post->categories;
+      $post_categories_ids = array();
+      $i = 0;
+      foreach ($post_categories as $post_category)
+      {
+          $post_categories_ids[$i] = $post_category->id;
+          $i++;
+      }
       if(!$post)
       {
         return redirect()->route('blog.index')->with(['fail' => 'Post not found']);
       }
       //Find categories
-      return view('admin.blog.edit_post' , ['post' => $post]);
+      return view('admin.blog.edit_post' , [
+        'post' => $post ,
+        'categories' => $categories ,
+        'post_categories' => $post_categories ,
+        'post_categories_ids' => $post_categories_ids]);
     }
 
     public function getCreatePost()
     {
-      return view('admin.blog.create_post');
+      $categories = Category::all();
+      return view('admin.blog.create_post' , ['categories' => $categories]);
     }
 
     public function postCreatePost(Request $request)
@@ -62,6 +78,14 @@ class PostController extends Controller
       $post->author = $request['author'];
       $post->body = $request['body'];
       $post->save();
+      if(strlen($request['categories'] > 0))
+      {
+        $categoryIDs = explode(',' , $request['categories']);
+        foreach ($categoryIDs as $categoryID)
+        {
+            $post->categories()->attach($categoryID);
+        }
+      }
 
       return redirect()->route('admin.index')->with(['success' => 'Post successfully created']);
     }
@@ -78,7 +102,15 @@ class PostController extends Controller
       $post->author = $request['author'];
       $post->body = $request['body'];
       $post->update();
-      //Categories...
+      $post->categories()->detach();
+      if(strlen($request['categories'] > 0))
+      {
+        $categoryIDs = explode(',' , $request['categories']);
+        foreach ($categoryIDs as $categoryID)
+        {
+            $post->categories()->attach($categoryID);
+        }
+      }
       return redirect()->route('admin.index')->with(['success' => 'Post successfully updated!']);
     }
 
